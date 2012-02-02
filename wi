@@ -1,0 +1,46 @@
+#!/bin/bash
+
+WI_PATH=${WI_PATH:=$HOME/.wi/wiki}
+DOC_PATH=$WI_PATH/docs
+INDEX_PATH=$WI_PATH/index
+
+function mkp {
+    mkdir -p $1
+}
+
+function init {
+    echo WI_PATH=$WI_PATH
+    mkp $WI_PATH
+    mkp $DOC_PATH
+    cd $WI_PATH
+
+    # XXX: check that we have git
+    # XXX: suppress this msg?
+    [[ ! -e $WI_PATH/.git ]] && git init
+    [[ -z "$EDITOR" ]] && EDITOR=vim
+}
+
+function usage {
+    me=$(basename $0)
+cat - <<EOF
+Usage: $me <topic>
+
+    Where topic is the topic you want to edit
+
+EOF
+    exit 0
+}
+
+function edit {
+    file=$DOC_PATH/$1.md
+    mode=create
+    [[ -e $file ]] && mode=update
+    $EDITOR $file
+    [[ ! -e $file ]] && return
+    [[ $mode = "create" ]] && git add $file
+    git commit -m "$1 $mode" $file
+}
+
+[[ -z $1 ]] && usage
+init
+edit $1
