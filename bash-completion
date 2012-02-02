@@ -1,0 +1,15 @@
+_wi()
+{
+    local cur prev opts base
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    if [[ ${prev} == 'wi' ]]; then
+        local topics=$(wi --cmds)
+        COMPREPLY=( $(compgen -W "${topics}" -- ${cur}) )
+    fi
+    return 0
+}
+
+complete -F _wi wi

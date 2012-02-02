@@ -9,7 +9,6 @@ function mkp {
 }
 
 function init {
-    echo WI_PATH=$WI_PATH
     mkp $WI_PATH
     mkp $DOC_PATH
     cd $WI_PATH
@@ -41,6 +40,21 @@ function edit {
     git commit -m "$1 $mode" $file
 }
 
+function run_if_command {
+    if [[ $1 == "--list" ]]; then
+        ls $DOC_PATH | sed -e 's/.md$//'
+        exit 0
+    fi
+    if [[ $1 == "--cmds" ]]; then
+        cat - <<EOF
+--list
+EOF
+        ls $DOC_PATH | sed -e 's/.md$//'
+        exit 0
+    fi
+}
+
 [[ -z $1 ]] && usage
 init
+run_if_command $1
 edit $1
