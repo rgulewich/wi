@@ -1,7 +1,8 @@
 #!/bin/bash
 
+DOC_DIR=docs
 WI_PATH=${WI_PATH:=$HOME/.wi/wiki}
-DOC_PATH=$WI_PATH/docs
+DOC_PATH=$WI_PATH/$DOC_DIR
 INDEX_PATH=$WI_PATH/index
 
 function mkp {
@@ -31,7 +32,7 @@ EOF
 }
 
 function edit {
-    file=$DOC_PATH/$1.md
+    file=$DOC_DIR/$1.md
     mode=create
     [[ -e $file ]] && mode=update
     $EDITOR $file
