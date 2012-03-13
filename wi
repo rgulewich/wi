@@ -23,9 +23,9 @@ function init {
 function usage {
     me=$(basename $0)
 cat - <<EOF
-Usage: $me <topic>
-
-    Where topic is the topic you want to edit
+Usage:
+    $me <topic>             Create or edit topic
+    $me --list              List all topics
 
 EOF
     exit 0
