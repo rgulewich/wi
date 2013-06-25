@@ -32,13 +32,20 @@ EOF
 }
 
 function edit {
+    commit="false"
     file=$DOC_DIR/$1.md
     mode=create
     [[ -e $file ]] && mode=update
     $EDITOR $file
     [[ ! -e $file ]] && return
-    [[ $mode = "create" ]] && git add $file
-    git commit -m "$1 $mode" $file
+    if [[ $mode == "create" ]]; then
+        git add $file
+        commit="true"
+    else
+        [[ $(git status --porcelain | grep $file | awk '{print $1}') == "M" ]] && commit="true"
+    fi
+
+    [[ $commit == "true" ]] && git commit -m "$1 $mode" $file
 }
 
 function run_if_command {
