@@ -1,5 +1,11 @@
 #!/bin/bash
 
+#
+# wi: A dead-simple git-based wiki
+#
+# Copyright (c) 2014 Rob Gulewich. All rights reserved.
+#
+
 DOC_DIR=docs
 WI_PATH=${WI_PATH:=$HOME/.wi/wiki}
 DOC_PATH=$WI_PATH/$DOC_DIR
@@ -25,7 +31,7 @@ function usage {
 cat - <<EOF
 Usage:
     $me <topic>             Create or edit topic
-    $me --list              List all topics
+    $me --list | --ls       List all topics
 
 EOF
     exit 0
@@ -49,7 +55,7 @@ function edit {
 }
 
 function run_if_command {
-    if [[ $1 == "--list" ]]; then
+    if [[ $1 == "--list" ]] || [[ $1 == "--ls" ]]; then
         ls $DOC_PATH | sed -e 's/.md$//'
         exit 0
     fi
