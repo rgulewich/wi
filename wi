@@ -3,16 +3,29 @@
 #
 # wi: A dead-simple git-based wiki
 #
-# Copyright (c) 2014 Rob Gulewich. All rights reserved.
+# Copyright (c) 2020 Rob Gulewich. All rights reserved.
 #
 
-DOC_DIR=docs
-WI_PATH=${WI_PATH:=$HOME/.wi/wiki}
-DOC_PATH=$WI_PATH/$DOC_DIR
-INDEX_PATH=$WI_PATH/index
+
+if [[ -n $WI_PATH ]]; then
+    DOC_PATH=$WI_PATH
+    DOC_DIR=.
+else
+    WI_PATH=$HOME/.wi/wiki
+    DOC_DIR=docs
+    DOC_PATH=$WI_PATH/$DOC_DIR
+fi
 
 function mkp {
     mkdir -p $1
+}
+
+function use_git {
+    if [[ -n $WI_GIT_DISABLED ]]; then
+        return 1
+    else
+        return 0
+    fi
 }
 
 function init {
@@ -22,7 +35,7 @@ function init {
 
     # XXX: check that we have git
     # XXX: suppress this msg?
-    [[ ! -e $WI_PATH/.git ]] && git init
+    [[ ! -e $WI_PATH/.git ]] && use_git && git init
     [[ -z "$EDITOR" ]] && EDITOR=vim
 }
 
@@ -44,11 +57,15 @@ function edit {
     [[ -e $file ]] && mode=update
     $EDITOR $file
     [[ ! -e $file ]] && return
-    if [[ $mode == "create" ]]; then
-        git add $file
-        commit="true"
+    if use_git; then
+        if [[ $mode == "create" ]]; then
+            git add $file
+            commit="true"
+        else
+            [[ $(git status --porcelain | grep $file | awk '{print $1}') == "M" ]] && commit="true"
+        fi
     else
-        [[ $(git status --porcelain | grep $file | awk '{print $1}') == "M" ]] && commit="true"
+        commit="false"
     fi
 
     [[ $commit == "true" ]] && git commit -m "$1 $mode" $file
